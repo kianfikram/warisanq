@@ -1,75 +1,197 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import React from "react";
+import {
+  StyleSheet,
+  View,
+  SafeAreaView,
+  StatusBar,
+  Text,
+  Image,
+  TouchableOpacity,
+  ImageSourcePropType,
+} from "react-native";
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+// Pastikan Anda memiliki ikon ini di folder assets Anda
+// Path relatif akan tetap sama karena assets ada di root folder proyek
+const calculatorIcon = require("/warisanq/assets/images/calculator_icon.png");
+const bookIcon = require("/warisanq/assets/images/book_icon.png");
 
-export default function HomeScreen() {
+// --- Komponen Header ---
+const Header: React.FC = () => {
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
+    <View style={headerStyles.header}>
+      <Text style={headerStyles.headerText}>Selamat Datang</Text>
+    </View>
+  );
+};
+
+const headerStyles = StyleSheet.create({
+  header: {
+    backgroundColor: "#007bff", // Example blue color
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    marginBottom: 20,
+    alignItems: "center",
+  },
+  headerText: {
+    color: "white",
+    fontSize: 24,
+    fontWeight: "bold",
+  },
+});
+
+// --- Komponen HadithCard ---
+const HadithCard: React.FC = () => {
+  return (
+    <View style={hadithCardStyles.hadithCard}>
+      <Text style={hadithCardStyles.hadithTitle}>Rasulullah ﷺ bersabda:</Text>
+      <Text style={hadithCardStyles.arabicText}>
+        "يا أبا هريرة، تعلموا الفرائض وعلموها، فإنها نصف العلم، وإنها تنسى،
+        وإنها أول شيء يرفع من أمتي"
+      </Text>
+      <Text style={hadithCardStyles.translationText}>
+        "Wahai Abu Hurairah, pelajarilah ilmu waris dan ajarkanlah karena ia
+        adalah separuh ilmu, dan ia adalah yang pertama kali akan diangkat dari
+        umatku." (HR. Ibnu Majah, Ad-Daruquthni, Al-Hakim, dan Al-Baihaqi)
+      </Text>
+    </View>
+  );
+};
+
+const hadithCardStyles = StyleSheet.create({
+  hadithCard: {
+    backgroundColor: "#e0f7fa", // Light blue background
+    borderRadius: 8,
+    padding: 20,
+    marginBottom: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  hadithTitle: {
+    fontWeight: "bold",
+    marginBottom: 10,
+    fontSize: 16,
+  },
+  arabicText: {
+    fontFamily: "System",
+    fontSize: 20,
+    textAlign: "right",
+    lineHeight: 30,
+    marginBottom: 15,
+  },
+  translationText: {
+    fontStyle: "italic",
+    fontSize: 14,
+    lineHeight: 22,
+  },
+});
+
+// --- Komponen FeatureCard ---
+interface FeatureCardProps {
+  icon: ImageSourcePropType;
+  title: string;
+  subtitle: string;
+  onPress: () => void;
+}
+
+const FeatureCard: React.FC<FeatureCardProps> = ({
+  icon,
+  title,
+  subtitle,
+  onPress,
+}) => {
+  return (
+    <TouchableOpacity
+      style={featureCardStyles.featureCard}
+      onPress={onPress}
+      activeOpacity={0.7}
+    >
+      <View style={featureCardStyles.featureIconContainer}>
         <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
+          source={icon}
+          style={featureCardStyles.featureIcon}
+          resizeMode="contain"
         />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+      </View>
+      <View style={featureCardStyles.featureText}>
+        <Text style={featureCardStyles.featureTitle}>{title}</Text>
+        <Text style={featureCardStyles.featureSubtitle}>{subtitle}</Text>
+      </View>
+    </TouchableOpacity>
+  );
+};
+
+const featureCardStyles = StyleSheet.create({
+  featureCard: {
+    backgroundColor: "white",
+    borderRadius: 8,
+    padding: 20,
+    marginBottom: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  featureIconContainer: {
+    width: 60,
+    height: 60,
+    marginRight: 15,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 10,
+  },
+  featureIcon: {
+    width: "100%",
+    height: "100%",
+  },
+  featureText: {
+    flex: 1,
+  },
+  featureTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#333",
+    marginBottom: 5,
+  },
+  featureSubtitle: {
+    fontSize: 14,
+    color: "#666",
+  },
+});
+
+// --- Komponen Aplikasi Utama (App) ---
+export default function App() {
+  return (
+    <SafeAreaView style={appStyles.container}>
+      <StatusBar barStyle="light-content" backgroundColor="#007bff" />
+      <Header />
+      <HadithCard />
+      <FeatureCard
+        icon={calculatorIcon}
+        title="Kalkulator Warisan"
+        subtitle="Hitung Bagian Waris"
+        onPress={() => console.log("Navigate to Calculator")}
+      />
+      <FeatureCard
+        icon={bookIcon}
+        title="Ilmu Kewarisan Islam"
+        subtitle="Penjelasan Aturan Kewarisan Dalam Islam Beserta Kuis Kasus Pembagian Warisan"
+        onPress={() => console.log("Navigate to Islamic Inheritance Knowledge")}
+      />
+    </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+const appStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#f0f2f5",
+    paddingHorizontal: 20,
   },
 });
