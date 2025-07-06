@@ -10,10 +10,12 @@ import {
   ImageSourcePropType,
 } from "react-native";
 
+import { Link } from "expo-router";
+
 // Pastikan Anda memiliki ikon ini di folder assets Anda
 // Path relatif akan tetap sama karena assets ada di root folder proyek
-const calculatorIcon = require("/warisanq/assets/images/calculator_icon.png");
-const bookIcon = require("/warisanq/assets/images/book_icon.png");
+const calculatorIcon = require("../../assets/images/calculator_icon.png");
+const bookIcon = require("../../assets/images/book_icon.png");
 
 // --- Komponen Header ---
 const Header: React.FC = () => {
@@ -172,18 +174,24 @@ export default function App() {
       <StatusBar barStyle="light-content" backgroundColor="#007bff" />
       <Header />
       <HadithCard />
-      <FeatureCard
-        icon={calculatorIcon}
-        title="Kalkulator Warisan"
-        subtitle="Hitung Bagian Waris"
-        onPress={() => console.log("Navigate to Calculator")}
-      />
-      <FeatureCard
-        icon={bookIcon}
-        title="Ilmu Kewarisan Islam"
-        subtitle="Penjelasan Aturan Kewarisan Dalam Islam Beserta Kuis Kasus Pembagian Warisan"
-        onPress={() => console.log("Navigate to Islamic Inheritance Knowledge")}
-      />
+      <Link href="/kalkulator1" asChild>
+        <FeatureCard
+          icon={calculatorIcon}
+          title="Kalkulator Warisan"
+          subtitle="Hitung Bagian Waris"
+          onPress={() => console.log("Navigate to Calculator")}
+        />
+      </Link>
+      <Link href="/dasar_faraid" asChild>
+        <FeatureCard
+          icon={bookIcon}
+          title="Ilmu Kewarisan Islam"
+          subtitle="Penjelasan Aturan Kewarisan Dalam Islam Beserta Kuis Kasus Pembagian Warisan"
+          onPress={() =>
+            console.log("Navigate to Islamic Inheritance Knowledge")
+          }
+        />
+      </Link>
     </SafeAreaView>
   );
 }
