@@ -2,7 +2,7 @@
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Ionicons, Feather } from "@expo/vector-icons";
-import { Link } from "expo-router";
+import { Link, LinkProps } from "expo-router";
 
 interface SidebarProps {
   onClose: () => void; // Fungsi untuk menutup sidebar
@@ -24,7 +24,7 @@ const EducationSidebar: React.FC<SidebarProps> = ({ onClose }) => {
     {
       name: "Penghalang Hak Waris (Al-Hajb)",
       icon: "close-circle",
-      href: "/edukasi/al_hajb",
+      href: "/edukasi/penghalang_hak_waris",
     },
     {
       name: "Pelaksanaan Pembagian Harta Warisan",
@@ -33,9 +33,9 @@ const EducationSidebar: React.FC<SidebarProps> = ({ onClose }) => {
     },
     { name: "Al-Aul & Al-Radd", icon: "search", href: "/edukasi/al_aul_radd" },
     {
-      name: "Kuis Pembagian Warisan",
+      name: "Kasus Pembagian Warisan",
       icon: "help-circle",
-      href: "/edukasi/kuis",
+      href: "/edukasi/kasus_waris",
     },
   ];
 
@@ -49,7 +49,7 @@ const EducationSidebar: React.FC<SidebarProps> = ({ onClose }) => {
       <View style={styles.menuItemsContainer}>
         {menuItems.map((item, index) => (
           // Menggunakan Link dari expo-router untuk navigasi
-          <Link key={index} href={item.href} asChild>
+          <Link key={index} href={item.href as LinkProps["href"]} asChild>
             <TouchableOpacity style={styles.menuItem} onPress={onClose}>
               {/* Icon dari Feather Icons */}
               <Feather
