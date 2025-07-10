@@ -182,7 +182,7 @@ export default function App() {
           onPress={() => console.log("Navigate to Calculator")}
         />
       </Link>
-      <Link href="/dasar_faraid" asChild>
+      <Link href="/edukasi/dasar_faraid" asChild>
         <FeatureCard
           icon={bookIcon}
           title="Ilmu Kewarisan Islam"
