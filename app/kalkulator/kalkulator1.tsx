@@ -79,7 +79,7 @@ const KalkulatorFaraidScreen: React.FC = () => {
 
     // Navigasi ke halaman Nilai Harta dan kirim data ahli waris sebagai parameter
     router.push({
-      pathname: "/kalkulator2",
+      pathname: "/kalkulator/kalkulator2",
       params: {
         ahliWarisData: JSON.stringify(ahliWarisData), // Ubah objek menjadi string JSON
       },

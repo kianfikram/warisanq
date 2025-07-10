@@ -95,7 +95,7 @@ const EstimasiHartaScreen: React.FC = () => {
 
       // Navigasi ke halaman hasil
       router.push(
-        `/kalkulator3?faraidResult=${encodeURIComponent(
+        `/kalkulator/kalkulator3?faraidResult=${encodeURIComponent(
           JSON.stringify(result)
         )}`
       );
