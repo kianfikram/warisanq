@@ -70,7 +70,7 @@ const EducationSidebar: React.FC<SidebarProps> = ({ onClose }) => {
 const styles = StyleSheet.create({
   sidebar: {
     width: "70%", // Lebar sidebar
-    backgroundColor: "#FFA500", // Warna oranye seperti di gambar
+    backgroundColor: "#ED6933",
     paddingTop: 60, // Sesuaikan dengan tinggi StatusBar dan header
     paddingHorizontal: 20,
     position: "absolute",

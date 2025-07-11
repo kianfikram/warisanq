@@ -52,13 +52,13 @@ export default function RootLayout() {
   // Jika aplikasi sudah siap, render stack navigator utama
   return (
     <Stack>
+      {/* Rute untuk tab navigator utama (halaman index ada di sini) */}
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       {/* Rute untuk modul edukasi */}
       <Stack.Screen name="edukasi" options={{ headerShown: false }} />
       {/* Rute untuk modul kalkulator */}
       <Stack.Screen name="kalkulator" options={{ headerShown: false }} />
       {/* Rute untuk tab navigator utama (halaman index ada di sini) */}
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      {/* Halaman 404 (Not Found) */}
       <Stack.Screen name="+not-found" />
     </Stack>
   );

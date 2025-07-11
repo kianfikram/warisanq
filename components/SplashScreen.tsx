@@ -11,6 +11,7 @@ import {
 } from "react-native";
 
 const { width } = Dimensions.get("window");
+const TEXT_TO_ANIMATE = "WariSolve"; // Teks yang akan dianimasikan
 
 interface SplashScreenProps {
   onAnimationFinish: () => void; // Callback saat animasi selesai
@@ -18,38 +19,43 @@ interface SplashScreenProps {
 
 const SplashScreen: React.FC<SplashScreenProps> = ({ onAnimationFinish }) => {
   const logoOpacity = useRef(new Animated.Value(0)).current; // Animasi opacity untuk logo
-  const textWidth = useRef(new Animated.Value(0)).current; // Animasi lebar untuk teks (efek clipping)
+  // Array of Animated.Value untuk opasitas setiap karakter
+  const characterOpacities = useRef(
+    TEXT_TO_ANIMATE.split("").map(() => new Animated.Value(0))
+  ).current;
 
   useEffect(() => {
-    // Animasi Fade In Logo
-    Animated.timing(logoOpacity, {
+    // 1. Animasi Fade In Logo (selama 2 detik)
+    const logoAnimation = Animated.timing(logoOpacity, {
       toValue: 1,
-      duration: 1000, // Durasi fade in logo
-      delay: 500, // Tunda sebentar sebelum logo muncul
-      useNativeDriver: true,
-    }).start(() => {
-      // Setelah logo fade in, mulai animasi teks
-      Animated.timing(textWidth, {
-        toValue: 1, // Menggunakan 1 sebagai representasi 100% lebar
-        duration: 800, // Durasi animasi teks
-        easing: require("react-native").Easing.out(
-          require("react-native").Easing.ease
-        ), // Efek easing
-        useNativeDriver: true,
-      }).start(() => {
-        // Setelah semua animasi selesai, panggil callback
-        setTimeout(() => {
-          onAnimationFinish();
-        }, 500); // Tunda sebentar sebelum navigasi ke aplikasi utama
-      });
+      duration: 2000, // Logo fade in selama 2 detik
+      useNativeDriver: true, // Opacity didukung native driver
     });
-  }, [logoOpacity, textWidth, onAnimationFinish]);
 
-  // Lebar teks akan diinterpolasi dari 0 hingga lebar penuh
-  const interpolatedTextWidth = textWidth.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, width * 0.5], // Contoh: 50% dari lebar layar untuk teks "WariSolve"
-  });
+    // 2. Animasi Teks (karakter per karakter)
+    const textAnimations = Animated.stagger(
+      50, // Delay antara setiap karakter (50ms)
+      characterOpacities.map((opacity) =>
+        Animated.timing(opacity, {
+          toValue: 1,
+          duration: 100, // Durasi fade in setiap karakter
+          useNativeDriver: true, // Opacity didukung native driver
+        })
+      )
+    );
+
+    // Jalankan animasi secara berurutan: Logo -> Tunda 1 detik -> Teks
+    Animated.sequence([
+      logoAnimation, // Logo fade in selesai
+      Animated.delay(1000), // Tunda 1 detik setelah logo selesai fade in
+      textAnimations, // Kemudian jalankan animasi teks karakter per karakter
+    ]).start(() => {
+      // Setelah semua animasi selesai, panggil callback
+      setTimeout(() => {
+        onAnimationFinish();
+      }, 500); // Tunda sebentar sebelum navigasi ke aplikasi utama
+    });
+  }, [logoOpacity, onAnimationFinish]); // Dependensi characterOpacities tidak perlu karena itu useRef.current
 
   return (
     <View style={styles.container}>
@@ -59,11 +65,15 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onAnimationFinish }) => {
         resizeMode="contain"
       />
       <View style={styles.textContainer}>
-        <Animated.View
-          style={[styles.clippingView, { width: interpolatedTextWidth }]}
-        >
-          <Text style={styles.text}>WariSolve</Text>
-        </Animated.View>
+        {/* Render setiap karakter dengan opasitas yang dianimasikan */}
+        {TEXT_TO_ANIMATE.split("").map((char, index) => (
+          <Animated.Text
+            key={index}
+            style={[styles.text, { opacity: characterOpacities[index] }]}
+          >
+            {char}
+          </Animated.Text>
+        ))}
       </View>
     </View>
   );
@@ -82,19 +92,16 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   textContainer: {
-    overflow: "hidden", // Penting untuk efek clipping
-  },
-  clippingView: {
-    // Lebar diatur oleh animasi interpolatedTextWidth
-    // Tinggi diatur oleh konten teks
+    flexDirection: "row", // Penting untuk menempatkan karakter secara horizontal
+    overflow: "hidden", // Untuk memastikan tidak ada masalah layout
+    // textContainer sudah terpusat oleh container.alignItems
   },
   text: {
     fontSize: 36, // Ukuran teks "WariSolve"
     fontWeight: "bold",
     color: "white",
     letterSpacing: 2, // Memberi sedikit jarak antar huruf
-    // Pastikan teks tidak terpotong oleh clippingView saat lebar penuh
-    // Ini diatasi dengan mengatur lebar clippingView ke interpolatedTextWidth
+    // textAlign: 'center' tidak diperlukan lagi karena setiap karakter adalah elemen terpisah
   },
 });
 

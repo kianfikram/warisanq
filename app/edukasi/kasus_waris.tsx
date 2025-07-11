@@ -21,7 +21,7 @@ const SIDEBAR_WIDTH = width * 0.7; // Sidebar width 70% of screen width
 const KuisPembagianScreen: React.FC = () => {
   const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  // Animated.Value to control animation (0 = closed, 1 = open)
+  // Animated.Value to control animation (0 = tertutup, 1 = open)
   const sidebarAnim = useRef(new Animated.Value(0)).current;
 
   // Function to open/close sidebar with animation
@@ -34,19 +34,19 @@ const KuisPembagianScreen: React.FC = () => {
     }).start();
   };
 
-  // Interpolation for main content X position (shifts right when sidebar opens)
+  // Interpolasi untuk posisi X konten utama (menggeser ke kanan saat sidebar terbuka)
   const mainContentTranslateX = sidebarAnim.interpolate({
     inputRange: [0, 1],
     outputRange: [0, SIDEBAR_WIDTH], // Shift content by sidebar width
   });
 
-  // Interpolation for main content scale (creates shrinking effect)
+  // Interpolasi untuk skala konten utama (membuat efek mengecil)
   const mainContentScale = sidebarAnim.interpolate({
     inputRange: [0, 1],
     outputRange: [1, 0.9], // From normal scale (1) to slightly smaller (0.9)
   });
 
-  // Interpolation for main content border radius (creates rounded corners)
+  // Interpolasi untuk radius border konten utama (membuat sudut membulat)
   const mainContentBorderRadius = sidebarAnim.interpolate({
     inputRange: [0, 1],
     outputRange: [0, 15], // From no radius to 15px
@@ -54,11 +54,10 @@ const KuisPembagianScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="light-content" backgroundColor="#007bff" />
-
-      {/* Sidebar (rendered behind main content, appears when isSidebarOpen true) */}
+      <StatusBar barStyle="light-content" backgroundColor="#ED6933" />{" "}
+      {/* Ubah warna status bar */}
+      {/* Sidebar (dirender di belakang konten utama, muncul saat isSidebarOpen true) */}
       {isSidebarOpen && <EducationSidebar onClose={toggleSidebar} />}
-
       {/* Main Content (Animated) */}
       <Animated.View
         style={[
@@ -69,11 +68,11 @@ const KuisPembagianScreen: React.FC = () => {
               { scale: mainContentScale },
             ],
             borderRadius: mainContentBorderRadius,
-            overflow: "hidden", // Important for borderRadius to be visible
+            overflow: "hidden", // Penting agar borderRadius terlihat
           },
         ]}
       >
-        {/* Header Configuration for this page */}
+        {/* Konfigurasi Header untuk halaman ini */}
         <Stack.Screen
           options={{
             title: "Kuis Pembagian Warisan", // Title in the center of the header
@@ -97,19 +96,22 @@ const KuisPembagianScreen: React.FC = () => {
               </TouchableOpacity>
             ),
             headerStyle: {
-              backgroundColor: "#007bff", // Header background color
+              backgroundColor: "#ED6933", // Ubah warna latar belakang header
             },
-            headerTintColor: "white", // Header text and icon color
+            headerTintColor: "white", // Warna teks dan ikon di header
           }}
         />
         {/* Scrollable Content */}
         <ScrollView style={styles.scrollViewContent}>
+          {/* Kartu Judul Utama */}
           <View style={styles.contentCard}>
             <Text style={styles.sectionTitle}>
               Contoh Kasus Pembagian Warisan
             </Text>
+          </View>
 
-            {/* Soal 1 */}
+          {/* Kartu Soal 1 */}
+          <View style={styles.contentCard}>
             <Text style={styles.subSectionTitle}>Soal 1 :</Text>
             <Text style={styles.paragraph}>
               Seorang laki-laki meninggal dunia dengan meninggalkan seorang
@@ -172,8 +174,10 @@ const KuisPembagianScreen: React.FC = () => {
                 </Text>
               </View>
             </View>
+          </View>
 
-            {/* Soal 2 */}
+          {/* Kartu Soal 2 */}
+          <View style={styles.contentCard}>
             <Text style={styles.subSectionTitle}>Soal 2 :</Text>
             <Text style={styles.paragraph}>
               Seorang laki-laki meninggal dunia dan meninggalkan 1 anak
@@ -224,8 +228,10 @@ const KuisPembagianScreen: React.FC = () => {
                 </Text>
               </View>
             </View>
+          </View>
 
-            {/* Soal 3 */}
+          {/* Kartu Soal 3 */}
+          <View style={styles.contentCard}>
             <Text style={styles.subSectionTitle}>Soal 3 :</Text>
             <Text style={styles.paragraph}>
               Seorang pria meninggal dunia dan meninggalkan ayah, 1 anak
@@ -315,8 +321,10 @@ const KuisPembagianScreen: React.FC = () => {
                 </Text>
               </View>
             </View>
+          </View>
 
-            {/* Soal 4 */}
+          {/* Kartu Soal 4 */}
+          <View style={styles.contentCard}>
             <Text style={styles.subSectionTitle}>Soal 4 :</Text>
             <Text style={styles.paragraph}>
               Seseorang meninggal dunia dan hanya meninggalkan ahli waris
@@ -1074,7 +1082,7 @@ const KuisPembagianScreen: React.FC = () => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#007bff", // Background color when sidebar is open
+    backgroundColor: "#ED6933", // Background color when sidebar is open
   },
   mainContentWrapper: {
     flex: 1,

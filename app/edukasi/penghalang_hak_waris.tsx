@@ -54,11 +54,10 @@ const AlHajbScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="light-content" backgroundColor="#007bff" />
-
+      <StatusBar barStyle="light-content" backgroundColor="#ED6933" />{" "}
+      {/* Ubah warna status bar */}
       {/* Sidebar (dirender di belakang konten utama, muncul saat isSidebarOpen true) */}
       {isSidebarOpen && <EducationSidebar onClose={toggleSidebar} />}
-
       {/* Konten Utama (Animated) */}
       <Animated.View
         style={[
@@ -97,24 +96,28 @@ const AlHajbScreen: React.FC = () => {
               </TouchableOpacity>
             ),
             headerStyle: {
-              backgroundColor: "#007bff", // Warna latar belakang header
+              backgroundColor: "#ED6933", // Ubah warna latar belakang header
             },
             headerTintColor: "white", // Warna teks dan ikon di header
           }}
         />
         <ScrollView style={styles.scrollViewContent}>
+          {/* Kartu 1: Definisi Al-Hajb */}
           <View style={styles.contentCard}>
-            <Text style={styles.sectionTitle}>
+            {/* Judul utama dengan perataan kiri */}
+            <Text style={styles.subSectionTitle}>
               Al-Hajb (Penghalang atau Penggugur Hak Waris)
             </Text>
-
             <Text style={styles.paragraph}>
               Al-hajb dalam bahasa Arab bermakna penghalang atau penggugur. Maka
               makna al-hajb menurut istilah ialah orang yang menghalangi orang
               lain untuk mendapatkan warisan, dan al-mahjub berarti orang yang
               terhalang untuk mendapatkan warisan.
             </Text>
+          </View>
 
+          {/* Kartu 2: Macam-macam al-Hajb */}
+          <View style={styles.contentCard}>
             <Text style={styles.subSectionTitle}>Macam-macam al-Hajb</Text>
             <Text style={styles.paragraph}>Al-hajb terbagi dua, yaitu :</Text>
 
@@ -137,20 +140,23 @@ const AlHajbScreen: React.FC = () => {
               Sedangkan al-hajb bi asy-syakhshi yaitu gugurnya hak waris
               seseorang dikarenakan adanya orang lain yang lebih berhak untuk
               menerimanya. Al-hajb bi asy-syakhshi ini sendiri terbagi menjadi
-              dua, yaitu :
+              dua, yaitu Hajb Hirman dan Hajb Nuqshan.
             </Text>
-            <Text style={styles.subListItem}>
-              • Hajb Hirman, yaitu penghalang yang menggugurkan seluruh hak
-              waris seseorang. Misalnya, terhalangnya hak waris seorang kakek
-              karena adanya ayah, terhalangnya hak waris cucu karena adanya
-              anak, terhalangnya hak waris saudara seayah karena adanya saudara
+            {/* Konten Hajb Hirman dan Hajb Nuqshan akan dipindahkan ke kartu terpisah di bawah */}
+          </View>
+
+          {/* Kartu Baru: Hajb Hirman dan Hajb Nuqshan */}
+          <View style={styles.contentCard}>
+            <Text style={styles.subSectionTitle}>Hajb Hirman</Text>
+            <Text style={styles.paragraph}>
+              Hajb Hirman, yaitu penghalang yang menggugurkan seluruh hak waris
+              seseorang. Misalnya, terhalangnya hak waris seorang kakek karena
+              adanya ayah, terhalangnya hak waris cucu karena adanya anak,
+              terhalangnya hak waris saudara seayah karena adanya saudara
               kandung, terhalangnya hak waris seorang nenek karena adanya ibu,
               dan seterusnya.
             </Text>
 
-            <Text style={styles.subSectionTitle}>
-              Pengelompokan Hajb Hirman
-            </Text>
             <Text style={styles.paragraph}>
               Dengan merujuk pada penjelasan-penjelasan di atas, maka dapat
               disimpulkan, para ahli waris dalam hajb hirman dapat dibagi
@@ -173,8 +179,9 @@ const AlHajbScreen: React.FC = () => {
               para ahli waris selain yang tersebut di atas.
             </Text>
 
-            <Text style={styles.subListItem}>
-              • Hajb Nuqshan, yaitu penghalangan terhadap hak waris seseorang
+            <Text style={styles.subSectionTitle}>Hajb Nuqshan</Text>
+            <Text style={styles.paragraph}>
+              Hajb Nuqshan, yaitu penghalangan terhadap hak waris seseorang
               untuk mendapatkan bagian yang terbanyak. Contohnya, Istri
               terhalang mendapatkan bagian warisan, dari seperempat (1/4)
               menjadi seperdelapan (1/8) karena adanya keturunan suami yang
@@ -196,7 +203,7 @@ const AlHajbScreen: React.FC = () => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#007bff", // Warna latar belakang header
+    backgroundColor: "#ED6933", // Warna latar belakang diubah menjadi oranye
   },
   headerIcon: {
     padding: 10,
@@ -224,14 +231,22 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
-    marginBottom: 15,
+    marginBottom: 15, // Jarak antar card jika ada lebih dari satu
   },
   sectionTitle: {
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: 15,
     color: "#333",
-    textAlign: "center",
+    textAlign: "center", // Ini adalah default, akan ditimpa oleh leftAlignedTitle
+  },
+  leftAlignedTitle: {
+    // Style baru untuk judul utama yang rata kiri
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 15,
+    color: "#333",
+    textAlign: "left", // Rata kiri
   },
   subSectionTitle: {
     fontSize: 18,
@@ -252,7 +267,6 @@ const styles = StyleSheet.create({
     marginLeft: 15, // Indent untuk daftar
     marginBottom: 5,
     color: "#555",
-    fontWeight: "bold", // Membuat bullet point utama lebih tebal
   },
   subParagraph: {
     fontSize: 15,

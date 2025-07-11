@@ -1,6 +1,6 @@
 // app/kalkulator/nilai_harta.tsx
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -12,16 +12,64 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
+  ScrollView, // Import ScrollView
 } from "react-native";
-import { Stack, useLocalSearchParams, useRouter } from "expo-router"; // Import useRouter and useLocalSearchParams
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+
+// Data untuk jenis-jenis harta beserta penjelasan dan contoh
+const assetTypes = [
+  {
+    key: "tanahBangunan",
+    label: "Tanah / Bangunan",
+    description:
+      "Nilai properti berupa tanah, rumah, apartemen, atau bangunan lainnya.",
+    example: "Contoh: Rumah tinggal, tanah kosong, ruko.",
+  },
+  {
+    key: "alatTransportasiMesin",
+    label: "Alat Transportasi / Mesin",
+    description: "Nilai kendaraan pribadi, alat berat, atau mesin produksi.",
+    example: "Contoh: Mobil, motor, truk, alat berat, mesin pabrik.",
+  },
+  {
+    key: "hartaBergerakLainnya",
+    label: "Harta Bergerak Lainnya",
+    description:
+      "Aset yang dapat dipindahkan selain alat transportasi dan mesin.",
+    example: "Contoh: Perhiasan, barang antik, koleksi seni, hewan ternak.",
+  },
+  {
+    key: "suratBerharga",
+    label: "Surat Berharga",
+    description:
+      "Investasi dalam bentuk dokumen kepemilikan atau janji pembayaran.",
+    example: "Contoh: Saham, obligasi, reksa dana, deposito berjangka.",
+  },
+  {
+    key: "kasSetaraKas",
+    label: "Kas / Setara Kas",
+    description: "Uang tunai atau aset yang sangat likuid dan mudah dicairkan.",
+    example:
+      "Contoh: Uang tunai di dompet, saldo rekening bank, tabungan giro.",
+  },
+  {
+    key: "hartaLainnya",
+    label: "Harta Lainnya",
+    description: "Aset lain yang tidak termasuk dalam kategori di atas.",
+    example:
+      "Contoh: Piutang (tagihan yang belum tertagih), hak paten, royalti.",
+  },
+];
 
 const EstimasiHartaScreen: React.FC = () => {
   const router = useRouter();
-  const params = useLocalSearchParams(); // Mengambil parameter dari rute sebelumnya
-  const ahliWarisData = JSON.parse((params.ahliWarisData as string) || "{}"); // Mengambil data ahli waris dari params
+  const params = useLocalSearchParams();
+  const ahliWarisData = JSON.parse((params.ahliWarisData as string) || "{}");
 
-  const [nilaiHarta, setNilaiHarta] = useState(""); // State untuk nilai harta
+  // State untuk setiap jenis harta
+  const [assetValues, setAssetValues] = useState<{ [key: string]: string }>({});
+  const [totalHartaBersih, setTotalHartaBersih] = useState(0);
 
   // Fungsi untuk memformat angka menjadi format mata uang Rupiah
   const formatRupiah = (angka: string) => {
@@ -45,34 +93,42 @@ const EstimasiHartaScreen: React.FC = () => {
     return formattedValue.replace(/[^0-9]/g, ""); // Hapus semua karakter selain angka
   };
 
-  const handleInputChange = (text: string) => {
+  // Handler perubahan input untuk setiap jenis harta
+  const handleAssetInputChange = (key: string, text: string) => {
     const unformatted = unformatRupiah(text);
-    setNilaiHarta(formatRupiah(unformatted));
+    setAssetValues((prev) => ({
+      ...prev,
+      [key]: formatRupiah(unformatted),
+    }));
   };
 
-  const handleAmbilHasil = async () => {
-    const totalHartaBersih = parseFloat(unformatRupiah(nilaiHarta));
+  // Efek untuk menghitung total harta bersih setiap kali assetValues berubah
+  useEffect(() => {
+    let sum = 0;
+    for (const key in assetValues) {
+      sum += parseFloat(unformatRupiah(assetValues[key] || "0"));
+    }
+    setTotalHartaBersih(sum);
+  }, [assetValues]);
 
-    if (isNaN(totalHartaBersih) || totalHartaBersih <= 0) {
+  const handleAmbilHasil = async () => {
+    if (totalHartaBersih <= 0) {
       Alert.alert(
         "Input Invalid",
-        "Mohon masukkan nilai harta yang valid (angka positif)."
+        "Total nilai harta harus lebih dari Rp 0. Mohon masukkan nilai harta yang valid."
       );
       return;
     }
 
-    // Gabungkan data ahli waris dari screen sebelumnya dengan nilai harta ini
     const dataUntukKalkulasi = {
-      ...ahliWarisData, // Data ahli waris dari screen sebelumnya
-      total_harta: totalHartaBersih, // Nilai harta bersih
+      ...ahliWarisData,
+      total_harta: totalHartaBersih,
     };
 
     try {
-      // Ganti dengan URL API Python Anda
       const response = await fetch(
         "http://192.168.1.25:5000/calculate_faraid",
         {
-          // Ganti dengan IP lokal atau domain server Anda
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -82,93 +138,97 @@ const EstimasiHartaScreen: React.FC = () => {
       );
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        console.error("Respons error dari API:", errorText);
+        throw new Error(
+          `HTTP error! status: ${response.status}. Detail: ${errorText}`
+        );
       }
 
       const result = await response.json();
       console.log("Hasil Perhitungan Faraid Akhir:", result);
 
-      // Tampilkan hasil kepada pengguna (misalnya, di halaman baru atau dalam alert)
-      Alert.alert("Hasil Perhitungan Faraid", JSON.stringify(result, null, 2));
-
-      // Opsional: navigasi ke halaman hasil
-
-      // Navigasi ke halaman hasil
-      router.push(
-        `/kalkulator/kalkulator3?faraidResult=${encodeURIComponent(
-          JSON.stringify(result)
-        )}`
-      );
-    } catch (error) {
+      router.push({
+        pathname: "/kalkulator/kalkulator3",
+        params: { faraidResult: JSON.stringify(result) },
+      });
+    } catch (error: any) {
       console.error("Error saat mengambil hasil Faraid:", error);
       Alert.alert(
         "Error",
-        "Gagal mendapatkan hasil perhitungan Faraid. Silakan coba lagi."
+        `Gagal mendapatkan hasil perhitungan Faraid. Detail: ${error.message}`
       );
     }
   };
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="dark-content" backgroundColor="#f0f2f5" />
+      <StatusBar
+        barStyle="light-content"
+        backgroundColor={styles.headerStyle.backgroundColor}
+      />
       <Stack.Screen
         options={{
           title: "Kalkulator Faraid",
-          headerShown: true, // Pastikan header ditampilkan
+          headerShown: true,
           headerLeft: () => (
             <TouchableOpacity
               onPress={() => router.back()}
-              style={styles.headerIcon}
+              style={styles.headerIconContainer}
             >
               <Ionicons name="arrow-back" size={24} color="white" />
             </TouchableOpacity>
           ),
-          headerRight: () => null, // Tidak ada ikon di kanan jika hanya ada panah kembali
-          headerStyle: {
-            backgroundColor: "#007bff", // Background biru tua untuk header
-          },
-          headerTintColor: "white", // Warna teks dan ikon di header
+          headerRight: () => null,
+          headerStyle: styles.headerStyle,
+          headerTintColor: "white",
         }}
       />
-      <KeyboardAvoidingView
-        style={styles.container}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-      >
-        {/* Progress Bar */}
-        <View style={styles.progressBarContainer}>
-          <View style={styles.progressBarFilled}></View>
-          <View style={styles.progressBarEmpty}></View>
-        </View>
 
+      {/* Progress Bar */}
+      <View style={styles.progressBarContainer}>
+        <View style={styles.progressBarFilled}></View>
+        <View style={styles.progressBarEmpty}></View>
+      </View>
+
+      <ScrollView style={styles.scrollViewContent}>
         <View style={styles.contentCard}>
           <Text style={styles.title}>Nilai Harta</Text>
           <Text style={styles.description}>
             Identifikasi nilai estimasi dari aset yang Anda miliki (aset
             bergerak dan tidak bergerak) seperti:
           </Text>
-          <Text style={styles.bulletPoint}>• Tabungan dan investasi</Text>
-          <Text style={styles.bulletPoint}>• Rumah dan tanah</Text>
-          <Text style={styles.bulletPoint}>• Saham perusahaan</Text>
-          <Text style={styles.bulletPoint}>• Kendaraan</Text>
-          <Text style={styles.bulletPoint}>• Aset lainnya</Text>
 
-          <Text style={styles.inputLabel}>
-            Perkiraan nilai aset (dalam IDR)
-          </Text>
-          <TextInput
-            style={styles.textInput}
-            placeholder="Rp 1.000.000"
-            keyboardType="numeric" // Memastikan hanya angka yang muncul di keyboard
-            value={nilaiHarta}
-            onChangeText={handleInputChange}
-            placeholderTextColor="#999"
-          />
+          {/* Input untuk setiap jenis harta */}
+          {assetTypes.map((asset) => (
+            <View key={asset.key} style={styles.assetInputContainer}>
+              <Text style={styles.assetLabel}>{asset.label}</Text>
+              <Text style={styles.assetDescription}>{asset.description}</Text>
+              <Text style={styles.assetExample}>{asset.example}</Text>
+              <TextInput
+                style={styles.textInput}
+                placeholder="Rp 0"
+                keyboardType="numeric"
+                value={assetValues[asset.key]}
+                onChangeText={(text) => handleAssetInputChange(asset.key, text)}
+                placeholderTextColor="#999"
+              />
+            </View>
+          ))}
+
+          {/* Kolom Jumlah Total Harta */}
+          <View style={styles.totalHartaContainer}>
+            <Text style={styles.totalHartaLabel}>Jumlah Total Harta</Text>
+            <Text style={styles.totalHartaValue}>
+              {formatRupiah(totalHartaBersih.toString())}
+            </Text>
+          </View>
 
           <TouchableOpacity style={styles.button} onPress={handleAmbilHasil}>
             <Text style={styles.buttonText}>Ambil Hasil</Text>
           </TouchableOpacity>
         </View>
-      </KeyboardAvoidingView>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -176,48 +236,50 @@ const EstimasiHartaScreen: React.FC = () => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#007bff", // Warna latar belakang header
+    backgroundColor: "#FF8C00", // <--- PERUBAHAN: Warna latar belakang header menjadi oranye
   },
-  container: {
-    flex: 1,
-    backgroundColor: "#f0f2f5", // Latar belakang utama aplikasi
-    paddingHorizontal: 20,
-    paddingTop: 0, // No extra padding needed here
+  headerStyle: {
+    backgroundColor: "#FF8C00", // <--- PERUBAHAN: Warna latar belakang header menjadi oranye
   },
-  headerIcon: {
+  headerIconContainer: {
     padding: 10,
-    // Adjust padding to align with native back button if necessary
+    marginLeft: Platform.OS === "ios" ? 0 : 5,
   },
   progressBarContainer: {
     flexDirection: "row",
     height: 8,
     borderRadius: 4,
-    backgroundColor: "rgba(255,255,255,0.4)", // Warna kosong progress bar
-    marginHorizontal: 20, // Sesuaikan dengan padding horizontal parent jika berbeda
-    marginTop: 10, // Margin dari bawah header
-    marginBottom: 20, // Margin ke content card
-    overflow: "hidden", // Pastikan progress bar tidak meluber
+    backgroundColor: "rgba(255,255,255,0.4)",
+    marginHorizontal: 20,
+    marginTop: 10,
+    marginBottom: 20,
+    overflow: "hidden",
   },
   progressBarFilled: {
-    width: "60%", // Contoh: 60% progress (sesuaikan sesuai langkah)
-    backgroundColor: "#FFA500", // Warna orange untuk progress bar
+    width: "60%",
+    backgroundColor: "#007bff", // <--- PERUBAHAN: Warna progress bar menjadi biru
     borderRadius: 4,
   },
   progressBarEmpty: {
-    flex: 1, // Sisa ruang
+    flex: 1,
     backgroundColor: "transparent",
+  },
+  scrollViewContent: {
+    flex: 1,
+    backgroundColor: "#f0f2f5",
   },
   contentCard: {
     backgroundColor: "white",
     borderRadius: 8,
     padding: 20,
-    marginTop: -10, // Sedikit overlap dengan area biru di atas
+    marginTop: -10,
+    marginHorizontal: 20,
+    marginBottom: 20,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
-    flex: 1, // Memastikan card mengisi sisa ruang
   },
   title: {
     fontSize: 22,
@@ -230,19 +292,31 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 22,
     color: "#555",
+    marginBottom: 20,
+    textAlign: "center",
+  },
+  assetInputContainer: {
+    marginBottom: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: "#eee",
+    paddingBottom: 15,
+  },
+  assetLabel: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#333",
     marginBottom: 5,
   },
-  bulletPoint: {
-    fontSize: 14,
-    lineHeight: 20,
-    color: "#555",
-    marginLeft: 10, // Indent for bullet points
+  assetDescription: {
+    fontSize: 13,
+    color: "#666",
+    marginBottom: 3,
   },
-  inputLabel: {
-    fontSize: 16,
-    color: "#333",
-    marginTop: 20,
-    marginBottom: 8,
+  assetExample: {
+    fontSize: 12,
+    color: "#888",
+    fontStyle: "italic",
+    marginBottom: 10,
   },
   textInput: {
     height: 50,
@@ -254,16 +328,31 @@ const styles = StyleSheet.create({
     color: "#333",
     textAlign: "left",
   },
+  totalHartaContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 30,
+    paddingTop: 15,
+    borderTopWidth: 2,
+    borderTopColor: "#f0f0f0",
+  },
+  totalHartaLabel: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#333",
+  },
+  totalHartaValue: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#007bff", // Warna biru untuk total harta
+  },
   button: {
-    backgroundColor: "#007bff",
+    backgroundColor: "#FF8C00",
     padding: 15,
     borderRadius: 8,
     alignItems: "center",
-    marginTop: 40, // Increased margin from input
-    // position: 'absolute', // Bisa jadi absolute untuk fixed di bawah
-    // bottom: 20,
-    // left: 20,
-    // right: 20,
+    marginTop: 40,
   },
   buttonText: {
     color: "white",

@@ -1,4 +1,4 @@
-// app/edukasi/al_hajb.tsx
+// app/edukasi/penggolongan_ahli_waris.tsx
 import React, { useState, useRef } from "react";
 import {
   View,
@@ -54,11 +54,10 @@ const PenggolonganAhliWarisScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="light-content" backgroundColor="#007bff" />
-
+      <StatusBar barStyle="light-content" backgroundColor="#ED6933" />{" "}
+      {/* Ubah warna status bar */}
       {/* Sidebar (dirender di belakang konten utama, muncul saat isSidebarOpen true) */}
       {isSidebarOpen && <EducationSidebar onClose={toggleSidebar} />}
-
       {/* Konten Utama (Animated) */}
       <Animated.View
         style={[
@@ -97,12 +96,13 @@ const PenggolonganAhliWarisScreen: React.FC = () => {
               </TouchableOpacity>
             ),
             headerStyle: {
-              backgroundColor: "#007bff", // Warna latar belakang header
+              backgroundColor: "#ED6933", // Ubah warna latar belakang header
             },
             headerTintColor: "white", // Warna teks dan ikon di header
           }}
         />
         <ScrollView style={styles.scrollViewContent}>
+          {/* Kartu 1: Ahli Waris Laki-laki dan Perempuan */}
           <View style={styles.contentCard}>
             <Text style={styles.sectionTitle}>
               Ahli Waris Laki-laki dan Perempuan Menurut Ijma’ para Ulama
@@ -151,7 +151,9 @@ const PenggolonganAhliWarisScreen: React.FC = () => {
               15. Laki-laki yang memerdekakan budak, baik budak laki-laki maupun
               budak perempuan.
             </Text>
+          </View>
 
+          <View style={styles.contentCard}>
             {/* Ahli Waris Perempuan */}
             <Text style={styles.subSectionTitle}>Ahli Waris Perempuan</Text>
             <Text style={styles.paragraph}>
@@ -178,15 +180,19 @@ const PenggolonganAhliWarisScreen: React.FC = () => {
               10. Perempuan yang memerdekakan budak, baik budak laki-laki maupun
               budak perempuan.
             </Text>
+          </View>
 
-            {/* Pengelompokan Ahli Waris */}
+          {/* Kartu 2: Pengelompokan Ahli Waris (Pendahuluan) */}
+          <View style={styles.contentCard}>
             <Text style={styles.sectionTitle}>Pengelompokan Ahli Waris</Text>
             <Text style={styles.paragraph}>
               Terdapat empat kelompok ahli waris, berikut ini adalah
               penjelasannya :
             </Text>
+          </View>
 
-            {/* Kelompok Ashab al-furudh */}
+          {/* Kartu 3: Kelompok Ashab al-furudh */}
+          <View style={styles.contentCard}>
             <Text style={styles.subSectionTitle}>Kelompok Ashab al-furudh</Text>
             <Text style={styles.paragraph}>
               Yaitu kelompok ahli waris yang pertama kali diberi bagian harta
@@ -201,8 +207,10 @@ const PenggolonganAhliWarisScreen: React.FC = () => {
             <Text style={styles.listItem}>5. Nenek dari ibu</Text>
             <Text style={styles.listItem}>6. Duda</Text>
             <Text style={styles.listItem}>7. Janda</Text>
+          </View>
 
-            {/* Kelompok Ashabah */}
+          {/* Kartu 4: Kelompok Ashabah */}
+          <View style={styles.contentCard}>
             <Text style={styles.subSectionTitle}>Kelompok Ashabah</Text>
             <Text style={styles.paragraph}>
               Yaitu kelompok ahli waris yang menerima sisa harta warisan setelah
@@ -246,8 +254,10 @@ const PenggolonganAhliWarisScreen: React.FC = () => {
             <Text style={styles.listItem}>
               2. Perempuan yang memerdekakan budak
             </Text>
+          </View>
 
-            {/* Kelompok Ashab al-furudh atau Ashabah */}
+          {/* Kartu 5: Kelompok Ashab al-furudh atau Ashabah */}
+          <View style={styles.contentCard}>
             <Text style={styles.subSectionTitle}>
               Kelompok Ashab al-furudh atau Ashabah
             </Text>
@@ -267,8 +277,10 @@ const PenggolonganAhliWarisScreen: React.FC = () => {
               Mereka akan digolongkan ke dalam kelompok ashab al-furudh, selama
               tidak ada saudara laki-laki mereka.
             </Text>
+          </View>
 
-            {/* Kelompok Ashab al-furudh dan Ashabah */}
+          {/* Kartu 6: Kelompok Ashab al-furudh dan Ashabah */}
+          <View style={styles.contentCard}>
             <Text style={styles.subSectionTitle}>
               Kelompok Ashab al-furudh dan Ashabah
             </Text>
@@ -297,7 +309,7 @@ const PenggolonganAhliWarisScreen: React.FC = () => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#007bff", // Warna latar belakang header
+    backgroundColor: "#ED6933", // Warna latar belakang diubah menjadi oranye
   },
   headerIcon: {
     padding: 10,

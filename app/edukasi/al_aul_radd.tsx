@@ -8,58 +8,57 @@ import {
   StatusBar,
   ScrollView,
   TouchableOpacity,
-  Animated, // For animation
-  Dimensions, // To get screen width
+  Animated, // Untuk animasi
+  Dimensions, // Untuk mendapatkan lebar layar
 } from "react-native";
 import { Stack, useRouter } from "expo-router";
-import { Ionicons, Feather } from "@expo/vector-icons"; // For icons
-import EducationSidebar from "../../components/EducationSidebar"; // Adjust path if different
+import { Ionicons, Feather } from "@expo/vector-icons"; // Untuk ikon
+import EducationSidebar from "../../components/EducationSidebar"; // Sesuaikan path jika berbeda
 
 const { width } = Dimensions.get("window");
-const SIDEBAR_WIDTH = width * 0.7; // Sidebar width 70% of screen width
+const SIDEBAR_WIDTH = width * 0.7; // Lebar sidebar 70% dari lebar layar
 
 const AlAulRaddScreen: React.FC = () => {
   const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  // Animated.Value to control animation (0 = closed, 1 = open)
+  // Animated.Value untuk mengontrol animasi (0 = tertutup, 1 = terbuka)
   const sidebarAnim = useRef(new Animated.Value(0)).current;
 
-  // Function to open/close sidebar with animation
+  // Fungsi untuk membuka/menutup sidebar dengan animasi
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
     Animated.timing(sidebarAnim, {
-      toValue: isSidebarOpen ? 0 : 1, // If open, to 0 (close); if closed, to 1 (open)
-      duration: 300, // Animation duration 300ms
-      useNativeDriver: true, // Use native driver for better performance
+      toValue: isSidebarOpen ? 0 : 1, // Jika terbuka, ke 0 (tutup); jika tertutup, ke 1 (buka)
+      duration: 300, // Durasi animasi 300ms
+      useNativeDriver: true, // Gunakan native driver untuk performa lebih baik
     }).start();
   };
 
-  // Interpolation for main content X position (shifts right when sidebar opens)
+  // Interpolasi untuk posisi X konten utama (menggeser ke kanan saat sidebar terbuka)
   const mainContentTranslateX = sidebarAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: [0, SIDEBAR_WIDTH], // Shift content by sidebar width
+    outputRange: [0, SIDEBAR_WIDTH], // Geser konten sejauh lebar sidebar
   });
 
-  // Interpolation for main content scale (creates shrinking effect)
+  // Interpolasi untuk skala konten utama (membuat efek mengecil)
   const mainContentScale = sidebarAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: [1, 0.9], // From normal scale (1) to slightly smaller (0.9)
+    outputRange: [1, 0.9], // Dari skala normal (1) menjadi sedikit lebih kecil (0.9)
   });
 
-  // Interpolation for main content border radius (creates rounded corners)
+  // Interpolasi untuk radius border konten utama (membuat sudut membulat)
   const mainContentBorderRadius = sidebarAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: [0, 15], // From no radius to 15px
+    outputRange: [0, 15], // Dari tidak ada radius menjadi 15px
   });
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="light-content" backgroundColor="#007bff" />
-
-      {/* Sidebar (rendered behind main content, appears when isSidebarOpen is true) */}
+      <StatusBar barStyle="light-content" backgroundColor="#ED6933" />{" "}
+      {/* Ubah warna status bar */}
+      {/* Sidebar (dirender di belakang konten utama, muncul saat isSidebarOpen true) */}
       {isSidebarOpen && <EducationSidebar onClose={toggleSidebar} />}
-
-      {/* Main Content (Animated) */}
+      {/* Konten Utama (Animated) */}
       <Animated.View
         style={[
           styles.mainContentWrapper,
@@ -69,17 +68,17 @@ const AlAulRaddScreen: React.FC = () => {
               { scale: mainContentScale },
             ],
             borderRadius: mainContentBorderRadius,
-            overflow: "hidden", // Important for borderRadius to be visible
+            overflow: "hidden", // Penting agar borderRadius terlihat
           },
         ]}
       >
-        {/* Header Configuration for this page */}
+        {/* Konfigurasi Header untuk halaman ini */}
         <Stack.Screen
           options={{
-            title: "Al-Aul & Al-Radd", // Title in the center of the header
+            title: "Al-Aul & Al-Radd", // Judul di tengah header
             headerShown: true,
             headerLeft: () => (
-              // Button to open sidebar (hamburger menu icon)
+              // Tombol untuk membuka sidebar (ikon menu hamburger)
               <TouchableOpacity
                 onPress={toggleSidebar}
                 style={styles.headerIcon}
@@ -88,7 +87,7 @@ const AlAulRaddScreen: React.FC = () => {
               </TouchableOpacity>
             ),
             headerRight: () => (
-              // Back button (arrow)
+              // Tombol kembali (panah)
               <TouchableOpacity
                 onPress={() => router.back()}
                 style={styles.headerIcon}
@@ -97,15 +96,16 @@ const AlAulRaddScreen: React.FC = () => {
               </TouchableOpacity>
             ),
             headerStyle: {
-              backgroundColor: "#007bff", // Header background color
+              backgroundColor: "#ED6933", // Ubah warna latar belakang header
             },
-            headerTintColor: "white", // Header text and icon color
+            headerTintColor: "white", // Warna teks dan ikon di header
           }}
         />
-        {/* Scrollable Content */}
+        {/* Konten yang bisa di-scroll */}
         <ScrollView style={styles.scrollViewContent}>
+          {/* Kartu 1: Definisi al-’Aul */}
           <View style={styles.contentCard}>
-            <Text style={styles.sectionTitle}>Definisi al-’Aul</Text>
+            <Text style={styles.subSectionTitle}>Definisi al-’Aul</Text>
             <Text style={styles.paragraph}>
               Al-’aul secara bahasa berarti *irtifa'* atau mengangkat. Dikatakan
               *'aalal miizaan* bila timbangan itu naik, terangkat. Kata *'aul*
@@ -140,8 +140,11 @@ const AlAulRaddScreen: React.FC = () => {
               bagian mereka dapat berkurang manakala pembaginya naik atau
               bertambah.
             </Text>
+          </View>
 
-            <Text style={styles.subSectionTitle}>Kesimpulan :</Text>
+          {/* Kartu 2: Kesimpulan (dari Al-Aul) */}
+          <View style={styles.contentCard}>
+            <Text style={styles.subSectionTitle}>Kesimpulan Al-'Aul :</Text>
             <Text style={styles.listItem}>
               1. Setiap masalah atau keadaan yang di dalamnya terdapat ahli
               waris yang berhak mendapatkan bagian 1/2 dari harta waris,
@@ -171,8 +174,9 @@ const AlAulRaddScreen: React.FC = () => {
             </Text>
           </View>
 
+          {/* Kartu 3: Definisi Al-Radd */}
           <View style={styles.contentCard}>
-            <Text style={styles.sectionTitle}>Definisi Al-Radd</Text>
+            <Text style={styles.subSectionTitle}>Definisi Al-Radd</Text>
             <Text style={styles.paragraph}>
               Ar-radd dalam bahasa Arab *i'aadah* berarti 'kembali/kembalikan'
               atau juga bermakna *sharf’* berpaling/palingkan'. Adapun ar-radd
@@ -191,7 +195,10 @@ const AlAulRaddScreen: React.FC = () => {
               akhirnya bagian mereka menjadi bertambah. Dengan demikian, dapat
               disimpulkan bahwa ar-radd adalah kebalikan dari al- ’aul.
             </Text>
+          </View>
 
+          {/* Kartu 4: Syarat-syarat Terjadinya ar-Radd */}
+          <View style={styles.contentCard}>
             <Text style={styles.subSectionTitle}>
               Syarat-syarat Terjadinya ar-Radd
             </Text>
@@ -206,7 +213,10 @@ const AlAulRaddScreen: React.FC = () => {
               Bila dalam pembagian harta waris tidak ada ketiga syarat tersebut
               maka kasus ar-radd tidak akan terjadi.
             </Text>
+          </View>
 
+          {/* Kartu 5: Ahli Waris yang Berhak Mendapat ar-Radd */}
+          <View style={styles.contentCard}>
             <Text style={styles.subSectionTitle}>
               Ahli Waris yang Berhak Mendapat ar-Radd
             </Text>
@@ -233,7 +243,10 @@ const AlAulRaddScreen: React.FC = () => {
               pembagian hak waris terdapat salah satunya, maka tidak mungkin ada
               ar-radd, karena keduanya akan menerima waris sebagai ashabah.
             </Text>
+          </View>
 
+          {/* Kartu 6: Ahli Waris yang Tidak Mendapat ar-Radd */}
+          <View style={styles.contentCard}>
             <Text style={styles.subSectionTitle}>
               Ahli Waris yang Tidak Mendapat ar-Radd
             </Text>
@@ -253,7 +266,7 @@ const AlAulRaddScreen: React.FC = () => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#007bff", // Background color when sidebar is open
+    backgroundColor: "#ED6933", // Background color changed to orange
   },
   mainContentWrapper: {
     flex: 1,

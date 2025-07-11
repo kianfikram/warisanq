@@ -1,4 +1,4 @@
-// app/kalkulator/index.tsx (atau nama file lain di dalam folder kalkulator Anda)
+// app/kalkulator/index.tsx
 
 import React, { useState } from "react";
 import {
@@ -10,12 +10,13 @@ import {
   Alert,
   SafeAreaView,
   StatusBar,
-  ScrollView, // Tambahkan ScrollView untuk konten yang bisa di-scroll
+  ScrollView,
+  Platform, // Import Platform for OS-specific styles
 } from "react-native";
 
 import { Picker } from "@react-native-picker/picker";
-import { Stack, useRouter } from "expo-router"; // Import Stack untuk konfigurasi header
-import { Ionicons, Feather } from "@expo/vector-icons"; // Untuk ikon header
+import { Stack, useRouter } from "expo-router";
+import { Ionicons, Feather } from "@expo/vector-icons";
 
 const KalkulatorFaraidScreen: React.FC = () => {
   const router = useRouter();
@@ -23,15 +24,14 @@ const KalkulatorFaraidScreen: React.FC = () => {
   // State untuk setiap input ahli waris
   const [jenisKelaminPewaris, setJenisKelaminPewaris] = useState("Laki-laki");
   const [statusPernikahan, setStatusPernikahan] = useState("Menikah");
-  const [jumlahIstri, setJumlahIstri] = useState("1");
+  const [jumlahIstri, setJumlahIstri] = useState("0");
   const [ayahHidup, setAyahHidup] = useState("Hidup");
-  const [ibuHidup, setIbuHidup] = useState("Meninggal");
-  const [anakLakiLaki, setAnakLakiLaki] = useState("2");
-  const [anakPerempuan, setAnakPerempuan] = useState("1");
+  const [ibuHidup, setIbuHidup] = useState("Hidup");
+  const [anakLakiLaki, setAnakLakiLaki] = useState("0");
+  const [anakPerempuan, setAnakPerempuan] = useState("0");
   const [cucuLakiLaki, setCucuLakiLaki] = useState("0");
   const [cucuPerempuan, setCucuPerempuan] = useState("0");
-  // Tambahkan state untuk ahli waris lainnya sesuai kebutuhan UI Anda
-  const [suamiHidup, setSuamiHidup] = useState("Meninggal"); // Jika pewaris perempuan
+  const [suamiHidup, setSuamiHidup] = useState("Meninggal");
   const [kakekHidup, setKakekHidup] = useState("Meninggal");
   const [nenekHidup, setNenekHidup] = useState("Meninggal");
   const [saudaraKandungLk, setSaudaraKandungLk] = useState("0");
@@ -46,7 +46,6 @@ const KalkulatorFaraidScreen: React.FC = () => {
   const [sepupuSebapakLk, setSepupuSebapakLk] = useState("0");
 
   const handleLanjut = () => {
-    // Kumpulkan semua data ahli waris dari state
     const ahliWarisData = {
       pewaris: {
         jenis_kelamin: jenisKelaminPewaris,
@@ -73,54 +72,47 @@ const KalkulatorFaraidScreen: React.FC = () => {
         paman_sebapak_jumlah: parseInt(pamanSebapak),
         sepupu_kandung_lk_jumlah: parseInt(sepupuKandungLk),
         sepupu_sebapak_lk_jumlah: parseInt(sepupuSebapakLk),
-        // ... tambahkan ahli waris lainnya di sini
       },
     };
 
-    // Navigasi ke halaman Nilai Harta dan kirim data ahli waris sebagai parameter
     router.push({
-      pathname: "/kalkulator/kalkulator2",
+      pathname: "/kalkulator/kalkulator2", // Pastikan ini path yang benar ke nilai_harta.tsx
       params: {
-        ahliWarisData: JSON.stringify(ahliWarisData), // Ubah objek menjadi string JSON
+        ahliWarisData: JSON.stringify(ahliWarisData),
       },
     });
-
-    // Hapus bagian fetch API dari sini, karena fetch akan dilakukan di halaman nilai_harta.tsx
-    // try {
-    //   const response = await fetch("http://192.168.1.23:5000", { ... });
-    //   ...
-    // } catch (error) {
-    //   ...
-    // }
   };
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="light-content" backgroundColor="#007bff" />
+      <StatusBar
+        barStyle="light-content"
+        backgroundColor={styles.headerStyle.backgroundColor}
+      />{" "}
+      {/* Warna status bar sesuai header */}
       {/* Konfigurasi Header untuk halaman ini */}
       <Stack.Screen
         options={{
-          title: "Kalkulator Faraid", // Judul di tengah header
-          headerShown: true, // Pastikan header ditampilkan
+          title: "Kalkulator Faraid",
+          headerShown: true,
           headerLeft: () => (
-            <TouchableOpacity onPress={() => router.back()}>
+            <TouchableOpacity
+              onPress={() => router.back()}
+              style={styles.headerIconContainer}
+            >
               <Ionicons name="arrow-back" size={24} color="white" />
             </TouchableOpacity>
           ),
-          headerRight: () => null, // Tidak ada ikon di kanan
-          headerStyle: {
-            backgroundColor: "#007bff", // Background biru tua untuk header
-          },
-          headerTintColor: "white", // Warna teks dan ikon di header
+          headerRight: () => null,
+          headerStyle: styles.headerStyle, // Menggunakan style dari StyleSheet
+          headerTintColor: "white",
         }}
       />
-
-      {/* Progress Bar (sesuaikan progressnya) */}
+      {/* Progress Bar */}
       <View style={styles.progressBarContainer}>
         <View style={styles.progressBarFilled}></View>
         <View style={styles.progressBarEmpty}></View>
       </View>
-
       <ScrollView style={styles.scrollViewContent}>
         <View style={styles.contentCard}>
           <Text style={styles.title}>Ahli Waris</Text>
@@ -132,30 +124,36 @@ const KalkulatorFaraidScreen: React.FC = () => {
           {/* Bagian input form Anda */}
           <View style={styles.inputRow}>
             <Text style={styles.inputLabel}>Jenis Kelamin Pewaris</Text>
-            <Picker
-              selectedValue={jenisKelaminPewaris}
-              style={styles.picker}
-              onValueChange={(itemValue: string) =>
-                setJenisKelaminPewaris(itemValue)
-              }
-            >
-              <Picker.Item label="Laki-laki" value="Laki-laki" />
-              <Picker.Item label="Perempuan" value="Perempuan" />
-            </Picker>
+            <View style={styles.pickerWrapper}>
+              {" "}
+              {/* Wrapper untuk Picker */}
+              <Picker
+                selectedValue={jenisKelaminPewaris}
+                style={styles.picker}
+                onValueChange={(itemValue: string) =>
+                  setJenisKelaminPewaris(itemValue)
+                }
+              >
+                <Picker.Item label="Laki-laki" value="Laki-laki" />
+                <Picker.Item label="Perempuan" value="Perempuan" />
+              </Picker>
+            </View>
           </View>
 
           <View style={styles.inputRow}>
             <Text style={styles.inputLabel}>Status Pernikahan</Text>
-            <Picker
-              selectedValue={statusPernikahan}
-              style={styles.picker}
-              onValueChange={(itemValue: string) =>
-                setStatusPernikahan(itemValue)
-              }
-            >
-              <Picker.Item label="Menikah" value="Menikah" />
-              <Picker.Item label="Belum Menikah" value="Belum Menikah" />
-            </Picker>
+            <View style={styles.pickerWrapper}>
+              <Picker
+                selectedValue={statusPernikahan}
+                style={styles.picker}
+                onValueChange={(itemValue: string) =>
+                  setStatusPernikahan(itemValue)
+                }
+              >
+                <Picker.Item label="Menikah" value="Menikah" />
+                <Picker.Item label="Belum Menikah" value="Belum Menikah" />
+              </Picker>
+            </View>
           </View>
 
           {/* Tampilkan input Istri hanya jika pewaris Laki-laki dan Menikah */}
@@ -163,21 +161,23 @@ const KalkulatorFaraidScreen: React.FC = () => {
             statusPernikahan === "Menikah" && (
               <View style={styles.inputRow}>
                 <Text style={styles.inputLabel}>Istri</Text>
-                <Picker
-                  selectedValue={jumlahIstri}
-                  style={styles.picker}
-                  onValueChange={(itemValue: string) =>
-                    setJumlahIstri(itemValue)
-                  }
-                >
-                  {[0, 1, 2, 3, 4].map((num) => (
-                    <Picker.Item
-                      key={num}
-                      label={num.toString()}
-                      value={num.toString()}
-                    />
-                  ))}
-                </Picker>
+                <View style={styles.pickerWrapper}>
+                  <Picker
+                    selectedValue={jumlahIstri}
+                    style={styles.picker}
+                    onValueChange={(itemValue: string) =>
+                      setJumlahIstri(itemValue)
+                    }
+                  >
+                    {[0, 1, 2, 3, 4].map((num) => (
+                      <Picker.Item
+                        key={num}
+                        label={num.toString()}
+                        value={num.toString()}
+                      />
+                    ))}
+                  </Picker>
+                </View>
               </View>
             )}
 
@@ -186,41 +186,47 @@ const KalkulatorFaraidScreen: React.FC = () => {
             statusPernikahan === "Menikah" && (
               <View style={styles.inputRow}>
                 <Text style={styles.inputLabel}>Suami</Text>
-                <Picker
-                  selectedValue={suamiHidup}
-                  style={styles.picker}
-                  onValueChange={(itemValue: string) =>
-                    setSuamiHidup(itemValue)
-                  }
-                >
-                  <Picker.Item label="Hidup" value="Hidup" />
-                  <Picker.Item label="Meninggal" value="Meninggal" />
-                </Picker>
+                <View style={styles.pickerWrapper}>
+                  <Picker
+                    selectedValue={suamiHidup}
+                    style={styles.picker}
+                    onValueChange={(itemValue: string) =>
+                      setSuamiHidup(itemValue)
+                    }
+                  >
+                    <Picker.Item label="Hidup" value="Hidup" />
+                    <Picker.Item label="Meninggal" value="Meninggal" />
+                  </Picker>
+                </View>
               </View>
             )}
 
           <View style={styles.inputRow}>
             <Text style={styles.inputLabel}>Ayah</Text>
-            <Picker
-              selectedValue={ayahHidup}
-              style={styles.picker}
-              onValueChange={(itemValue: string) => setAyahHidup(itemValue)}
-            >
-              <Picker.Item label="Hidup" value="Hidup" />
-              <Picker.Item label="Meninggal" value="Meninggal" />
-            </Picker>
+            <View style={styles.pickerWrapper}>
+              <Picker
+                selectedValue={ayahHidup}
+                style={styles.picker}
+                onValueChange={(itemValue: string) => setAyahHidup(itemValue)}
+              >
+                <Picker.Item label="Hidup" value="Hidup" />
+                <Picker.Item label="Meninggal" value="Meninggal" />
+              </Picker>
+            </View>
           </View>
 
           <View style={styles.inputRow}>
             <Text style={styles.inputLabel}>Ibu</Text>
-            <Picker
-              selectedValue={ibuHidup}
-              style={styles.picker}
-              onValueChange={(itemValue: string) => setIbuHidup(itemValue)}
-            >
-              <Picker.Item label="Hidup" value="Hidup" />
-              <Picker.Item label="Meninggal" value="Meninggal" />
-            </Picker>
+            <View style={styles.pickerWrapper}>
+              <Picker
+                selectedValue={ibuHidup}
+                style={styles.picker}
+                onValueChange={(itemValue: string) => setIbuHidup(itemValue)}
+              >
+                <Picker.Item label="Hidup" value="Hidup" />
+                <Picker.Item label="Meninggal" value="Meninggal" />
+              </Picker>
+            </View>
           </View>
 
           <View style={styles.inputRow}>
@@ -269,26 +275,30 @@ const KalkulatorFaraidScreen: React.FC = () => {
 
           <View style={styles.inputRow}>
             <Text style={styles.inputLabel}>Kakek</Text>
-            <Picker
-              selectedValue={kakekHidup}
-              style={styles.picker}
-              onValueChange={(itemValue: string) => setKakekHidup(itemValue)}
-            >
-              <Picker.Item label="Hidup" value="Hidup" />
-              <Picker.Item label="Meninggal" value="Meninggal" />
-            </Picker>
+            <View style={styles.pickerWrapper}>
+              <Picker
+                selectedValue={kakekHidup}
+                style={styles.picker}
+                onValueChange={(itemValue: string) => setKakekHidup(itemValue)}
+              >
+                <Picker.Item label="Hidup" value="Hidup" />
+                <Picker.Item label="Meninggal" value="Meninggal" />
+              </Picker>
+            </View>
           </View>
 
           <View style={styles.inputRow}>
             <Text style={styles.inputLabel}>Nenek</Text>
-            <Picker
-              selectedValue={nenekHidup}
-              style={styles.picker}
-              onValueChange={(itemValue: string) => setNenekHidup(itemValue)}
-            >
-              <Picker.Item label="Hidup" value="Hidup" />
-              <Picker.Item label="Meninggal" value="Meninggal" />
-            </Picker>
+            <View style={styles.pickerWrapper}>
+              <Picker
+                selectedValue={nenekHidup}
+                style={styles.picker}
+                onValueChange={(itemValue: string) => setNenekHidup(itemValue)}
+              >
+                <Picker.Item label="Hidup" value="Hidup" />
+                <Picker.Item label="Meninggal" value="Meninggal" />
+              </Picker>
+            </View>
           </View>
 
           <View style={styles.inputRow}>
@@ -403,21 +413,28 @@ const KalkulatorFaraidScreen: React.FC = () => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#007bff", // Warna latar belakang header
+    backgroundColor: "#FF8C00",
+  },
+  headerStyle: {
+    backgroundColor: "#FF8C00",
+  },
+  headerIconContainer: {
+    padding: 10,
+    marginLeft: Platform.OS === "ios" ? 0 : 5,
   },
   progressBarContainer: {
     flexDirection: "row",
     height: 8,
     borderRadius: 4,
-    backgroundColor: "rgba(255,255,255,0.4)", // Warna kosong progress bar
+    backgroundColor: "rgba(255,255,255,0.4)",
     marginHorizontal: 20,
     marginTop: 10,
     marginBottom: 20,
     overflow: "hidden",
   },
   progressBarFilled: {
-    width: "30%", // Contoh: 30% progress untuk langkah pertama
-    backgroundColor: "#FFA500", // Warna orange untuk progress bar
+    width: "30%",
+    backgroundColor: "#007bff",
     borderRadius: 4,
   },
   progressBarEmpty: {
@@ -432,8 +449,8 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderRadius: 8,
     padding: 20,
-    marginTop: -10, // Sedikit overlap dengan area biru di atas
-    marginHorizontal: 20, // Sesuaikan dengan padding horizontal parent jika berbeda
+    marginTop: -10,
+    marginHorizontal: 20,
     marginBottom: 20,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
@@ -465,12 +482,19 @@ const styles = StyleSheet.create({
     color: "#333",
     flex: 2,
   },
-  picker: {
+  pickerWrapper: {
     flex: 1,
     height: 40,
     borderColor: "#ccc",
     borderWidth: 1,
     borderRadius: 5,
+    overflow: "hidden", // Penting untuk memastikan border radius pada Picker di Android
+    justifyContent: "center", // Pusatkan konten Picker secara vertikal
+  },
+  picker: {
+    width: "100%", // Picker mengambil lebar penuh wrapper
+    height: "100%", // Picker mengambil tinggi penuh wrapper
+    color: Platform.OS === "android" ? "#333" : undefined,
   },
   textInput: {
     flex: 1,
@@ -482,7 +506,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   button: {
-    backgroundColor: "#007bff",
+    backgroundColor: "#FF8C00",
     padding: 15,
     borderRadius: 8,
     alignItems: "center",

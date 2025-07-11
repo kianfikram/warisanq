@@ -1,3 +1,5 @@
+// app/kalkulator/hasil.tsx
+
 import React, { useState, useEffect } from "react";
 import {
   View,
@@ -8,6 +10,7 @@ import {
   StatusBar,
   ScrollView,
   Alert,
+  Platform, // Import Platform for OS-specific styles
 } from "react-native";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -22,9 +25,13 @@ const HasilFaraidScreen: React.FC = () => {
       try {
         const result = JSON.parse(params.faraidResult as string);
         setFaraidResult(result);
-      } catch (error) {
+      } catch (error: any) {
+        // Explicitly type error as any for message property
         console.error("Error parsing faraidResult:", error);
-        Alert.alert("Error", "Gagal memuat hasil perhitungan.");
+        Alert.alert(
+          "Error",
+          `Gagal memuat hasil perhitungan. Detail: ${error.message}`
+        );
         setFaraidResult(null);
       }
     } else {
@@ -52,7 +59,11 @@ const HasilFaraidScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="light-content" backgroundColor="#007bff" />
+      {/* PERUBAHAN: Warna status bar sesuai header */}
+      <StatusBar
+        barStyle="light-content"
+        backgroundColor={styles.headerStyle.backgroundColor}
+      />
       <Stack.Screen
         options={{
           title: "Kalkulator Faraid",
@@ -60,15 +71,13 @@ const HasilFaraidScreen: React.FC = () => {
           headerLeft: () => (
             <TouchableOpacity
               onPress={() => router.back()}
-              style={styles.headerIcon}
+              style={styles.headerIconContainer} // Menggunakan container untuk padding
             >
               <Ionicons name="arrow-back" size={24} color="white" />
             </TouchableOpacity>
           ),
           headerRight: () => null,
-          headerStyle: {
-            backgroundColor: "#007bff",
-          },
+          headerStyle: styles.headerStyle, // Menggunakan style dari StyleSheet
           headerTintColor: "white",
         }}
       />
@@ -114,8 +123,7 @@ const HasilFaraidScreen: React.FC = () => {
                     </Text>
                     <Text style={[styles.tableCell, styles.columnBgDihitung]}>
                       {item.bagian_dihitung || "-"}
-                    </Text>{" "}
-                    {/* Tambahkan bagian_dihitung di Python */}
+                    </Text>
                     <Text style={[styles.tableCell, styles.columnNilai]}>
                       {formatRupiah(item.jumlah_harta)}
                     </Text>
@@ -171,7 +179,8 @@ const HasilFaraidScreen: React.FC = () => {
             )}
           </View>
 
-          <TouchableOpacity
+          {/* Tombol Simpan Hasil (DIHAPUS) */}
+          {/* <TouchableOpacity
             style={styles.button}
             onPress={() =>
               Alert.alert(
@@ -181,13 +190,14 @@ const HasilFaraidScreen: React.FC = () => {
             }
           >
             <Text style={styles.buttonText}>Simpan Hasil</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
 
+          {/* PERUBAHAN: Tombol Kembali navigasi ke index */}
           <TouchableOpacity
-            style={[styles.button, styles.secondaryButton]}
-            onPress={() => router.back()}
+            style={styles.button} // Menggunakan style button utama
+            onPress={() => router.push("/")} // Navigasi ke halaman utama
           >
-            <Text style={styles.secondaryButtonText}>Kembali</Text>
+            <Text style={styles.buttonText}>Kembali ke Utama</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -198,7 +208,7 @@ const HasilFaraidScreen: React.FC = () => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#007bff",
+    backgroundColor: "#FF8C00", // <--- PERUBAHAN: Warna latar belakang header menjadi oranye
   },
   loadingContainer: {
     flex: 1,
@@ -211,7 +221,17 @@ const styles = StyleSheet.create({
     color: "#555",
   },
   headerIcon: {
+    // Ini adalah style lama, tidak digunakan lagi secara langsung oleh headerLeft
     padding: 10,
+  },
+  headerIconContainer: {
+    // <--- PENAMBAHAN: Container untuk ikon panah kembali
+    padding: 10,
+    marginLeft: Platform.OS === "ios" ? 0 : 5, // Sedikit penyesuaian margin untuk Android
+  },
+  headerStyle: {
+    // <--- PENAMBAHAN: Definisi gaya header
+    backgroundColor: "#FF8C00", // <--- PERUBAHAN: Warna latar belakang header menjadi oranye
   },
   progressBarContainer: {
     flexDirection: "row",
@@ -225,7 +245,7 @@ const styles = StyleSheet.create({
   },
   progressBarFilled: {
     width: "100%", // 100% progress di halaman hasil
-    backgroundColor: "#FFA500",
+    backgroundColor: "#007bff", // <--- PERUBAHAN: Warna progress bar menjadi biru
     borderRadius: 4,
   },
   progressBarEmpty: {
@@ -303,7 +323,7 @@ const styles = StyleSheet.create({
     fontStyle: "italic",
   },
   button: {
-    backgroundColor: "#007bff",
+    backgroundColor: "#FF8C00",
     padding: 15,
     borderRadius: 8,
     alignItems: "center",

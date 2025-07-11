@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import { Stack, useRouter } from "expo-router";
 import { Ionicons, Feather } from "@expo/vector-icons"; // Untuk ikon
-import EducationSidebar from "../../components/EducationSidebar";
+import EducationSidebar from "../../components/EducationSidebar"; // Sesuaikan path jika berbeda
 
 const { width } = Dimensions.get("window");
 const SIDEBAR_WIDTH = width * 0.7; // Lebar sidebar 70% dari lebar layar
@@ -54,11 +54,10 @@ const Dasar_FaraidScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="light-content" backgroundColor="#007bff" />
-
+      <StatusBar barStyle="light-content" backgroundColor="#ED6933" />{" "}
+      {/* Ubah warna status bar */}
       {/* Sidebar (dirender di belakang konten utama, muncul saat isSidebarOpen true) */}
       {isSidebarOpen && <EducationSidebar onClose={toggleSidebar} />}
-
       {/* Konten Utama (Animated) */}
       <Animated.View
         style={[
@@ -97,7 +96,7 @@ const Dasar_FaraidScreen: React.FC = () => {
               </TouchableOpacity>
             ),
             headerStyle: {
-              backgroundColor: "#007bff", // Warna latar belakang header
+              backgroundColor: "#ED6933", // Ubah warna latar belakang header
             },
             headerTintColor: "white", // Warna teks dan ikon di header
           }}
@@ -118,13 +117,13 @@ const Dasar_FaraidScreen: React.FC = () => {
             </Text>
             <View style={styles.quranVerseContainer}>
               <Text style={styles.arabicText}>
-                يَسْتَفْتُونَكَ قُلِ اللَّهُ يُفْتِيكُمْ فِي الْكَلَالَةِ إِنِ
+                يَسْتَفْتُونَكَ قُلِ اللَّهُ يُفْتِيكُمْ فِي الْكَلَالَةِ إِنِ
                 امْرُؤٌ هَلَكَ لَيْسَ لَهُ وَلَدٌ وَلَهُ أُخْتٌ فَلَهَا نِصْفُ
-                مَا تَرَكَ وَهُوَ يَرِثُهَا إِن لَّمْ يَكُن لَّهَا وَلَدٌ فَإِن
-                كَانَتَا اثْنَتَيْنِ فَلَهُمَا الثُّلُثَانِ مِمَّا تَرَكَ وَإِن
-                كَانُوا إِخْوَةً رِّجَالًا وَنِسَاءً فَلِلذَّكَرِ مِثْلُ حَظِّ
-                الْأُنثَيَيْنِ يُبَيِّنُ اللَّهُ لَكُمْ أَن تَضِلُّوا ۗ
-                وَاللَّهُ بِكُلِّ شَيْءٍ عَلِيمٌ
+                مَا تَرَكَ وَهُوَ يَرِثُهَا إِن لَّمْ يَكُن لَّهَا وَلَدٌ فَإِن
+                كَانَتَا اثْنَتَيْنِ فَلَهُمَا الثُّلُثَانِ مِمَّا تَرَكَ وَإِن
+                كَانُوا إِخْوَةً رِّجَالًا وَنِسَاءً فَلِلذَّكَرِ مِثْلُ حَظِّ
+                الْأُنثَيَيْنِ يُبَيِّنُ اللَّهُ لَكُمْ أَن تَضِلُّوا ۗ
+                وَاللَّهُ بِكُلِّ شَيْءٍ عَلِيمٌ
               </Text>
               <Text style={styles.translationText}>
                 Mereka meminta fatwa kepadamu (tentang kalalah). Katakanlah,
@@ -155,9 +154,9 @@ const Dasar_FaraidScreen: React.FC = () => {
             </Text>
             <View style={styles.quranVerseContainer}>
               <Text style={styles.arabicText}>
-                يَا أَبَا هُرَيْرَةَ، تَعَلَّمُوا الْفَرَائِضَ وَعَلِّمُوهَا
-                فَإِنَّهَا نِصْفُ الْعِلْمِ، وَإِنَّهَا تُنْسَى، وَإِنَّهَا
-                أَوَّلُ شَيْءٍ يُرْفَعُ مِنْ أُمَّتِي
+                يَا أَبَا هُرَيْرَةَ، تَعَلَّمُوا الْفَرَائِضَ وَعَلِّمُوهَا
+                فَإِنَّهَا نِصْفُ الْعِلْمِ، وَإِنَّهَا تُنْسَى، وَإِنَّهَا
+                أَوَّلُ شَيْءٍ يُرْفَعُ مِنْ أُمَّتِي
               </Text>
               <Text style={styles.translationText}>
                 "Wahai Abu Hurairah, pelajarilah ilmu waris dan ajarkanlah
@@ -236,7 +235,7 @@ const Dasar_FaraidScreen: React.FC = () => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#007bff", // Warna latar belakang saat sidebar terbuka
+    backgroundColor: "#ED6933", // Warna latar belakang diubah menjadi oranye
   },
   mainContentWrapper: {
     flex: 1,
@@ -269,10 +268,11 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: 18, // Ukuran font disesuaikan
     fontWeight: "bold",
     marginBottom: 10,
     color: "#333",
+    textAlign: "left", // Default rata kiri
   },
   sectionDescription: {
     fontSize: 15,
@@ -281,7 +281,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   numberedText: {
-    fontSize: 16,
+    fontSize: 15, // Ukuran font disesuaikan
     color: "#333",
     marginVertical: 4,
     lineHeight: 22,
